@@ -1,15 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using System; // Namespace for Console output
-using System.Configuration; // Namespace for ConfigurationManager
-using System.Threading.Tasks; // Namespace for Task
+﻿using Microsoft.Extensions.Hosting;
 using Azure.Identity;
-using Azure.Storage.Queues; // Namespace for Queue storage types
-using Azure.Storage.Queues.Models; // Namespace for PeekedMessage
+using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
 using System.Text;
-using Newtonsoft.Json.Linq;
-using Azure;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace EventGridQueue
 {
@@ -56,25 +49,9 @@ namespace EventGridQueue
 
                 foreach (QueueMessage message in receivedMessages)
                 {
-                    //var data = Convert.ToBase64String(message.Body.ToArray());
-                    var buffer = Convert.FromBase64String(message.Body.ToString());
-                    Console.WriteLine(buffer);
-                    var data = Encoding.UTF8.GetString(buffer);
-                    Console.WriteLine(data);
-
-                    //var buffer = message.Body.ToArray();
-
-                    //string returnValue;
-
-                    //using (MemoryStream ms = new MemoryStream(buffer))
-                    //{
-                    //    ms.Position = 0;
-                    //    BinaryFormatter bf = new BinaryFormatter();
-                    //    returnValue = (string)bf.Deserialize(ms);
-                    //}
-
                     // Process (i.e. print) the messages in less than 5 minutes
-                    Console.WriteLine($"De-queued message: '{data}'");
+                    var msgData = Encoding.UTF8.GetString(Convert.FromBase64String(message.Body.ToString()));
+                    Console.WriteLine($"De-queued message: '{msgData}'");
 
                     // Delete the message
                     await _queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt).ConfigureAwait(false);
